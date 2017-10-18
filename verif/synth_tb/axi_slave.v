@@ -243,7 +243,7 @@ reg     sending_mem_wrresp2nvdla;
 reg     memresp_wrfifo_rd_busy;
 reg     memresp_rdfifo_rd_busy;
 
-reg [15:0]            config_mem[`NUM_CONFIGS-1:0];
+reg [`MSEQ_CONFIG_SIZE-1:0]            config_mem[`NUM_CONFIGS-1:0];
 
 // Write fifo depths of 64
 // Write data fifo instance
@@ -635,12 +635,12 @@ always @ (posedge clk or negedge reset) begin
       //saxi2mem_valid <= 1'b1;
       //saxi2mem_cmd <= `SAXI2MEM_CMD_WR;
       saxi2mem_cmd_wr <= 1'b1;
-      saxi2mem_addr_wr <= from_wr_fifo_addr & `AXI_ADDR_WIDTH'hFFFFFFC0;  // Might not even require this based on Kynan's memory implementation
+      saxi2mem_addr_wr <= from_wr_fifo_addr & {{(`AXI_ADDR_WIDTH-6){1'b1}},6'h00};
       saxi2mem_len_wr <= from_wr_fifo_len;
       saxi2mem_size_wr <= from_wr_fifo_size;
 
       // Shift data/wstrb if addr is not 64-Byte aligned
-      if((from_wr_fifo_addr & `AXI_ADDR_WIDTH'h0000_0020) == `AXI_ADDR_WIDTH'h0000_0020) begin  
+      if((from_wr_fifo_addr & `AXI_ADDR_WIDTH'h0020) == `AXI_ADDR_WIDTH'h0020) begin  
         // Shift data by 32 Bytes
         saxi2mem_data <= (from_fifo_wdata << 256);
         saxi2mem_wstrb <= (from_fifo_wstrb << 32);
@@ -660,7 +660,7 @@ always @ (posedge clk or negedge reset) begin
         //saxi2mem_valid <= 1'b1;
         //saxi2mem_cmd <= `SAXI2MEM_CMD_RD;
         saxi2mem_cmd_rd <= 1'b1;
-        saxi2mem_addr_rd <= from_rd_fifo_addr & `AXI_ADDR_WIDTH'hFFFFFFC0;  // Might not even require this based on Kynan's memory implementation
+        saxi2mem_addr_rd <= from_rd_fifo_addr & {{(`AXI_ADDR_WIDTH-6){1'b1}},6'h00};
         saxi2mem_len_rd <= from_rd_fifo_len;
         saxi2mem_size_rd <= from_rd_fifo_size;
 
@@ -701,25 +701,25 @@ always @ (posedge clk) begin
     end
 end
 
-
+integer aid_i;
+integer aid_conf_i;
 always @ (posedge clk or negedge reset) begin
   if(!reset) begin
     wrid_fifo_rd_busy <= 1'b1;
     saxi2nvdla_axi_slave_bvalid <= 1'b0;
     sending_mem_wrresp2nvdla <= 1'b0;
-    for (integer i=0; i<(2**`AXI_AID_WIDTH); i++)
+    for (aid_i=0; aid_i<(2**`AXI_AID_WIDTH); aid_i++)
     begin
-//       rdata_table_valid[i] <= 0;
-        waddr_ptr_head[i] <= 0;
-        waddr_ptr_tail[i] <= 0;
-        waddr_ptr_mid[i] <= 0;
-        wdata_ptr_head[i] <= 0;
-        wdata_ptr_tail[i] <= 0;
+        waddr_ptr_head[aid_i] <= 0;
+        waddr_ptr_tail[aid_i] <= 0;
+        waddr_ptr_mid[aid_i] <= 0;
+        wdata_ptr_head[aid_i] <= 0;
+        wdata_ptr_tail[aid_i] <= 0;
     end
-    for (integer i=0; i<(2**(`AXI_AID_WIDTH+`MAX_WRITE_CONFLICT)); i++)
+    for (aid_conf_i=0; aid_conf_i<(2**(`AXI_AID_WIDTH+`MAX_WRITE_CONFLICT)); aid_conf_i++)
     begin
-        waddr_bank_av[i] <= 1'b0;
-        wdata_bank_dv[i] <= 1'b0;
+        waddr_bank_av[aid_conf_i] <= 1'b0;
+        wdata_bank_dv[aid_conf_i] <= 1'b0;
     end
   end else begin
 
@@ -764,6 +764,7 @@ end
 // Read Response
 assign {rdcmd2mem, rdcmd2mem_len, rdcmd2mem_id, rdcmd2mem_addr} = (rdid_fifo_rd_valid && ~rdid_fifo_rd_busy) ? rdid_fifo_rd_bus : {`ID_FIFO_DATA_LEN{1'b0}};
 
+integer aid_j;
 always @ (posedge clk or negedge reset) begin
   if(!reset) begin
     rdid_fifo_rd_busy <= 1'b1;
@@ -775,9 +776,9 @@ always @ (posedge clk or negedge reset) begin
     mem_rdret_araddr <= 0;
     rd_data_burst_count <= 4'b0000;
     shift_amount_retdata <= 0;
-    for (integer i=0; i<(2**`AXI_AID_WIDTH); i++)
+    for (aid_j=0; aid_j<(2**`AXI_AID_WIDTH); aid_j++)
     begin
-        rdata_table_valid[i] <= 0;
+        rdata_table_valid[aid_j] <= 0;
     end
   end else begin
 
@@ -839,7 +840,7 @@ always @ (posedge clk or negedge reset) begin
         rdata_table_timestamp[rdcmd2mem_id] <= $time;
         rdata_table_data[rdcmd2mem_id][`DATABUS2MEM_WIDTH-1:0] <= 0;
         rdata_table_len[rdcmd2mem_id] <= rdcmd2mem_len;
-        if((rdcmd2mem_len == 4'b0001) && ((rdcmd2mem_addr & `AXI_ADDR_WIDTH'h0000_0020) == `AXI_ADDR_WIDTH'h0000_0020)) begin  // 2 data transfers out of the 64 byte return data - decide based on the address which one to send.  Check for 64-bit alignment
+        if((rdcmd2mem_len == 4'b0001) && ((rdcmd2mem_addr & `AXI_ADDR_WIDTH'h0020) == `AXI_ADDR_WIDTH'h0020)) begin  // 2 data transfers out of the 64 byte return data - decide based on the address which one to send.  Check for 64-bit alignment
             saxi2nvdla_axi_slave_rdata <= memresp_rdfifo_rd_bus[`DATABUS2MEM_WIDTH-1: 256];
             rdata_table_data[rdcmd2mem_id][`DATABUS2MEM_WIDTH-1:256] <= memresp_rdfifo_rd_bus[`DATABUS2MEM_WIDTH-1:256];
 `ifdef AXI_MEM_DEBUG

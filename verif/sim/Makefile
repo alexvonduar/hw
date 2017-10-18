@@ -37,7 +37,7 @@
 #   make run TESTDIR=../traces/traceplayer/sanity0
 # Run with test with waves, use verdi to open
 #   make build DUMP=1 DUMPER=VERDI
-#   make verifcom DUMP=1 DUMPER=VERDI
+#   make vericom DUMP=1 DUMPER=VERDI
 #   make run DUMP=1 DUMPER=VERDI TESTDIR=../traces/traceplayer/sanity0 
 #   make verdi DUMP=1 DUMPER=VERDI TESTDIR=../traces/traceplayer/sanity0 
 #
@@ -89,7 +89,7 @@ CHDIR	:= cd
 # example: LSF_COMMAND       := qsub -P maxwell -q o_vcs_16G -m rel4or5 -I 
 # -K = block
 
-LSF_COMMAND       := 
+LSF_COMMAND       ?= 
 
 # ----------------------------------------------------------------------------
 # MAKE CMDLINE OVERRIDES
