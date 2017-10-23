@@ -13,7 +13,6 @@ module syn_slave_mem_wrap (
     saxi2nvdla_axi_slave0_rdata                  ,
     saxi2nvdla_axi_slave0_rid                    ,
     saxi2nvdla_axi_slave0_rlast                  ,
-    saxi2nvdla_axi_slave0_rresp                  ,
     saxi2nvdla_axi_slave0_rvalid                 ,
     saxi2nvdla_axi_slave0_wready                 ,
 
@@ -25,7 +24,6 @@ module syn_slave_mem_wrap (
     saxi2nvdla_axi_slave1_rdata                  ,
     saxi2nvdla_axi_slave1_rid                    ,
     saxi2nvdla_axi_slave1_rlast                  ,
-    saxi2nvdla_axi_slave1_rresp                  ,
     saxi2nvdla_axi_slave1_rvalid                 ,
     saxi2nvdla_axi_slave1_wready                 ,
 
@@ -50,7 +48,6 @@ module syn_slave_mem_wrap (
     nvdla2saxi_axi_slave0_bready                 ,
     nvdla2saxi_axi_slave0_rready                 ,
     nvdla2saxi_axi_slave0_wdata                  ,
-    nvdla2saxi_axi_slave0_wid                    ,
     nvdla2saxi_axi_slave0_wlast                  ,
     nvdla2saxi_axi_slave0_wstrb                  ,
     nvdla2saxi_axi_slave0_wvalid                 ,
@@ -76,7 +73,6 @@ module syn_slave_mem_wrap (
     nvdla2saxi_axi_slave1_bready                 ,
     nvdla2saxi_axi_slave1_rready                 ,
     nvdla2saxi_axi_slave1_wdata                  ,
-    nvdla2saxi_axi_slave1_wid                    ,
     nvdla2saxi_axi_slave1_wlast                  ,
     nvdla2saxi_axi_slave1_wstrb                  ,
     nvdla2saxi_axi_slave1_wvalid
@@ -94,7 +90,6 @@ output                                saxi2nvdla_axi_slave0_bvalid          ;
 output                        [`DATABUS2MEM_WIDTH-1:0] saxi2nvdla_axi_slave0_rdata           ;
 output     [`AXI_SLAVE_RID_WIDTH-1:0] saxi2nvdla_axi_slave0_rid             ;
 output                                saxi2nvdla_axi_slave0_rlast           ;
-output                          [1:0] saxi2nvdla_axi_slave0_rresp           ;
 output                                saxi2nvdla_axi_slave0_rvalid          ;
 output                                saxi2nvdla_axi_slave0_wready          ;
 
@@ -106,7 +101,6 @@ output                                saxi2nvdla_axi_slave1_bvalid          ;
 output                        [`DATABUS2MEM_WIDTH-1:0] saxi2nvdla_axi_slave1_rdata           ;
 output     [`AXI_SLAVE_RID_WIDTH-1:0] saxi2nvdla_axi_slave1_rid             ;
 output                                saxi2nvdla_axi_slave1_rlast           ;
-output                          [1:0] saxi2nvdla_axi_slave1_rresp           ;
 output                                saxi2nvdla_axi_slave1_rvalid          ;
 output                                saxi2nvdla_axi_slave1_wready          ;
 
@@ -131,7 +125,6 @@ input                                 nvdla2saxi_axi_slave0_awvalid         ;
 input                                 nvdla2saxi_axi_slave0_bready          ;
 input                                 nvdla2saxi_axi_slave0_rready          ;
 input                         [`DATABUS2MEM_WIDTH-1:0] nvdla2saxi_axi_slave0_wdata           ;
-input      [`AXI_SLAVE_WID_WIDTH-1:0] nvdla2saxi_axi_slave0_wid             ;
 input                                 nvdla2saxi_axi_slave0_wlast           ;
 input                          [(`DATABUS2MEM_WIDTH/8)-1:0] nvdla2saxi_axi_slave0_wstrb           ;
 input                                 nvdla2saxi_axi_slave0_wvalid          ;
@@ -157,7 +150,6 @@ input                                 nvdla2saxi_axi_slave1_awvalid         ;
 input                                 nvdla2saxi_axi_slave1_bready          ;
 input                                 nvdla2saxi_axi_slave1_rready          ;
 input                         [`DATABUS2MEM_WIDTH-1:0] nvdla2saxi_axi_slave1_wdata           ;
-input      [`AXI_SLAVE_WID_WIDTH-1:0] nvdla2saxi_axi_slave1_wid             ;
 input                                 nvdla2saxi_axi_slave1_wlast           ;
 input                          [(`DATABUS2MEM_WIDTH/8)-1:0] nvdla2saxi_axi_slave1_wstrb           ;
 input                                 nvdla2saxi_axi_slave1_wvalid          ;
@@ -207,7 +199,6 @@ wire            axi_clk                ;
     ,.saxi2nvdla_axi_slave_rdata      (saxi2nvdla_axi_slave0_rdata  )
     ,.saxi2nvdla_axi_slave_rid        (saxi2nvdla_axi_slave0_rid    )
     ,.saxi2nvdla_axi_slave_rlast      (saxi2nvdla_axi_slave0_rlast  )
-    ,.saxi2nvdla_axi_slave_rresp      (saxi2nvdla_axi_slave0_rresp  )
     ,.saxi2nvdla_axi_slave_rvalid     (saxi2nvdla_axi_slave0_rvalid )
     ,.saxi2nvdla_axi_slave_wready     (saxi2nvdla_axi_slave0_wready )
 
@@ -232,7 +223,6 @@ wire            axi_clk                ;
     ,.nvdla2saxi_axi_slave_bready     (nvdla2saxi_axi_slave0_bready )
     ,.nvdla2saxi_axi_slave_rready     (nvdla2saxi_axi_slave0_rready )
     ,.nvdla2saxi_axi_slave_wdata      (nvdla2saxi_axi_slave0_wdata  )
-    ,.nvdla2saxi_axi_slave_wid        (nvdla2saxi_axi_slave0_wid    )
     ,.nvdla2saxi_axi_slave_wlast      (nvdla2saxi_axi_slave0_wlast  )
     ,.nvdla2saxi_axi_slave_wstrb      (nvdla2saxi_axi_slave0_wstrb  )
     ,.nvdla2saxi_axi_slave_wvalid     (nvdla2saxi_axi_slave0_wvalid )
@@ -266,7 +256,6 @@ wire            axi_clk                ;
     ,.saxi2nvdla_axi_slave_rdata      (saxi2nvdla_axi_slave1_rdata  )
     ,.saxi2nvdla_axi_slave_rid        (saxi2nvdla_axi_slave1_rid    )
     ,.saxi2nvdla_axi_slave_rlast      (saxi2nvdla_axi_slave1_rlast  )
-    ,.saxi2nvdla_axi_slave_rresp      (saxi2nvdla_axi_slave1_rresp  )
     ,.saxi2nvdla_axi_slave_rvalid     (saxi2nvdla_axi_slave1_rvalid )
     ,.saxi2nvdla_axi_slave_wready     (saxi2nvdla_axi_slave1_wready )
 
@@ -291,7 +280,6 @@ wire            axi_clk                ;
     ,.nvdla2saxi_axi_slave_bready     (nvdla2saxi_axi_slave1_bready )
     ,.nvdla2saxi_axi_slave_rready     (nvdla2saxi_axi_slave1_rready )
     ,.nvdla2saxi_axi_slave_wdata      (nvdla2saxi_axi_slave1_wdata  )
-    ,.nvdla2saxi_axi_slave_wid        (nvdla2saxi_axi_slave1_wid    )
     ,.nvdla2saxi_axi_slave_wlast      (nvdla2saxi_axi_slave1_wlast  )
     ,.nvdla2saxi_axi_slave_wstrb      (nvdla2saxi_axi_slave1_wstrb  )
     ,.nvdla2saxi_axi_slave_wvalid     (nvdla2saxi_axi_slave1_wvalid )
