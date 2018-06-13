@@ -21,3 +21,4 @@ JAVA := /usr/bin/java
 # used in ordt to generate reigster, need be newer than 1.7
 PERL := /usr/bin/perl
 
+PYTHON := /home/tools/continuum/Anaconda2-4.4.0/bin/python2.7
